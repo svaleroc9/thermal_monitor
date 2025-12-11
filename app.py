@@ -193,68 +193,40 @@ with tab5:
     st.subheader("📘 ¿Cómo se calcula el COP?")
 
     st.markdown(r"""
-El **Coeficiente de Desempeño (COP)** mide qué tan eficiente es un sistema de calefacción.
+El **Coeficiente de Desempeño (COP)** mide qué tan eficiente es un sistema de calefacción.  
+Compara la **energía térmica útil entregada al agua** con la **energía eléctrica consumida**.
 
-## 🔷 Definición general
+---
+
+# 🔷 Fórmula general del COP
 
 $$
 COP = \frac{\dot{Q}}{P_{el}}
 $$
 
----
+donde:
 
-# 🔵 1. Modo Flujo Abierto (Caudalímetro)
-
-Cuando el agua fluye a través del tanque:
-
-$$
-Q = m\, c_p\, (T_{out} - T_{in})
-$$
-
-El volumen calentado se obtiene integrando el caudal:
-
-$$
-m = \rho \int \dot{V}(t)\, dt
-$$
-
-Luego, la potencia térmica útil es:
-
-$$
-\dot{Q} = \frac{Q}{\Delta t}
-$$
+- \( \dot{Q} \) = potencia térmica útil (W)  
+- \( P_{el} \) = potencia eléctrica consumida por el sistema (W)
 
 ---
 
-# 🔵 2. Modo Tanque Cerrado (Volumen fijo)
+# ⚡ ¿De dónde sale \(P_{el}\)?
 
-Cuando cierras la llave, el volumen del tanque es fijo:
-
-$$
-Q = m\, c_p\, (T_{final} - T_{inicial})
-$$
-
-con
+La potencia eléctrica del calentador se calcula como:
 
 $$
-m = \rho\, V_{tanque}
+P_{el} = V \cdot I
 $$
 
-Y el COP se calcula igual:
+donde:
 
-$$
-COP = \frac{\dot{Q}}{P_{el}}
-$$
+- **V** = voltaje aplicado al compresor  
+- **I** = corriente promedio medida  
+
+Estos valores los ingresa el usuario en la aplicación.
 
 ---
 
-# 🔧 Supuestos utilizados
+# 🖥️ Diagrama del flujo de energía
 
-- Agua con densidad aproximada:  
-  $$ \rho \approx 1\ \text{kg/L} $$
-- Calor específico del agua:  
-  $$ c_p = 4180\ \text{J/(kg·K)} $$
-- No se consideran pérdidas térmicas del tanque.  
-- El tiempo se toma desde la hora corregida ingresada por el usuario.
-
----
-""")
