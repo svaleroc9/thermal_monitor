@@ -79,44 +79,83 @@ if file:
     st.pyplot(fig3)
 
     # ======================= CÁLCULO DEL COP =======================
-    st.write("## ⚡ Cálculo del COP")
+st.write("## ⚡ Cálculo del COP")
 
-    voltaje = st.number_input("Voltaje (V)", value=208.0)
-    corriente = st.number_input("Corriente promedio (A)", value=8.0)
+# Elegir modo de cálculo
+modo = st.radio(
+    "Selecciona el modo de cálculo del COP:",
+    ("Caudalímetro (flujo abierto)", "Volumen fijo (tanque cerrado)")
+)
 
-    P_el = voltaje * corriente  # Potencia eléctrica
-    st.write(f"**Potencia eléctrica:** {P_el:.1f} W")
+voltaje = st.number_input("Voltaje (V)", value=208.0)
+corriente = st.number_input("Corriente promedio (A)", value=8.0)
+P_el = voltaje * corriente  # Potencia eléctrica
 
-    # ===== Integración del volumen ignorando caudal < 0.5 L/min =====
+st.write(f"**Potencia eléctrica:** {P_el:.1f} W")
+
+rho = 1       # densidad agua kg/L
+cp = 4180     # calor específico J/kgK
+
+
+# ============================================================
+# 🔘 MODO 1 — Caudalímetro (flujo abierto)
+# ============================================================
+if modo == "Caudalímetro (flujo abierto)":
+
     volumen = 0
     for i in range(1, len(df)):
         caudal = df.loc[i, "Caudal(L/min)"]
-        if caudal < 0.5:
+        if caudal < 0.5:   # ignorar ruido
             continue
 
-        t1 = df.loc[i-1, "Tiempo_real"]
-        t2 = df.loc[i, "Tiempo_real"]
-        dt = (t2 - t1).total_seconds() / 60  # minutos
-
+        dt = (df.loc[i, "Tiempo_real"] - df.loc[i-1, "Tiempo_real"]).total_seconds() / 60
         volumen += caudal * dt
 
     st.write(f"**Volumen calentado:** {volumen:.2f} L")
 
-    # ===== Calor aportado m·cp·ΔT =====
-    rho = 1  # kg/L
-    cp = 4180  # J/kgK
+    # ΔT del tanque total
     deltaT_tank = df["T_tank"].iloc[-1] - df["T_tank"].iloc[0]
 
-    Q = volumen * rho * cp * deltaT_tank  # Joules
-
+    Q = volumen * rho * cp * deltaT_tank
     tiempo_total_s = (df["Tiempo_real"].iloc[-1] - df["Tiempo_real"].iloc[0]).total_seconds()
-    Q_dot = Q / tiempo_total_s  # W
+    Q_dot = Q / tiempo_total_s
 
     COP = Q_dot / P_el
 
     st.write(f"**ΔT del tanque:** {deltaT_tank:.2f} °C")
     st.write(f"**Transferencia de calor útil (W):** {Q_dot:.2f}")
-    st.write(f"# ⭐ COP estimado: **{COP:.2f}**")
+    st.write(f"# ⭐ COP estimado (flujo abierto): **{COP:.2f}**")
+
+
+# ============================================================
+# 🔘 MODO 2 — Volumen fijo (tanque cerrado)
+# ============================================================
+else:
+    st.write("### 🔒 Cálculo COP para tanque cerrado (llave cerrada)")
+
+    volumen_fijo = st.number_input("Volumen de agua en el tanque (L)", value=140.0)
+
+    # En tanque cerrado siempre usamos T_tank inicial y T_tank final
+    T_inicial = df["T_tank"].iloc[0]
+    T_final   = df["T_tank"].iloc[-1]
+    deltaT    = T_final - T_inicial
+
+    st.write(f"**Temperatura inicial del tanque:** {T_inicial:.2f} °C")
+    st.write(f"**Temperatura final del tanque:** {T_final:.2f} °C")
+    st.write(f"**ΔT del tanque:** {deltaT:.2f} °C")
+
+    # Energía térmica agregada
+    Q = volumen_fijo * rho * cp * deltaT
+
+    # Tiempo total del experimento
+    tiempo_total_s = (df["Tiempo_real"].iloc[-1] - df["Tiempo_real"].iloc[0]).total_seconds()
+    Q_dot = Q / tiempo_total_s
+
+    COP = Q_dot / P_el
+
+    st.write(f"**Transferencia de calor útil (W):** {Q_dot:.2f}")
+    st.write(f"# ⭐ COP estimado (tanque cerrado): **{COP:.2f}**")
+
 
     # ======================= DESCARGAR RESULTADOS =======================
     st.write("## 📥 Descargar datos corregidos")
