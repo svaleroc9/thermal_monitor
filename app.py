@@ -6,20 +6,20 @@ import matplotlib.pyplot as plt
 # ======================== CONFIGURACIÓN GENERAL ========================
 st.set_page_config(
     page_title="Analizador COP – Calentador de Agua",
-    page_icon="🚰",
+    page_icon="🔥",
     layout="wide"
 )
 
-# Tema claro para evitar fondo negro
+# Tema claro (evitar fondo negro)
 st.markdown("""
     <style>
-    body { background-color: #ffffff !important; }
+        body { background-color: #ffffff !important; }
+        h1, h2, h3 { color: #222222; }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("🔥 Analizador de Datos – COP Calentador de Agua (ESP32 + FS300A)")
 st.write("Sube tu archivo CSV para analizar temperaturas, caudal y calcular el COP.")
-
 
 # =========================== SUBIR ARCHIVO =============================
 file = st.file_uploader("📤 Sube tu archivo CSV", type=["csv"])
@@ -31,35 +31,39 @@ if not file:
 df = pd.read_csv(file)
 st.success("CSV cargado correctamente ✔")
 
-
 # =========================== PROCESAR TIEMPO ============================
 st.subheader("⏰ Hora real de inicio del experimento")
 
 start_time = st.time_input("Selecciona la hora de inicio (ej: 07:56:00)")
 
-# Convertir tiempos tipo "mm:ss" a timedelta
+# Convertir "mm:ss" a timedelta
 df["Tiempo"] = pd.to_timedelta(df["Tiempo"])
 
-# Crear hora sin zona horaria (evita que Streamlit lo convierta a UTC)
+# Crear hora sin zona horaria
 inicio = pd.to_datetime(str(start_time), format="%H:%M:%S")
 
-# Construir columna de tiempo real
+# Tiempo real corregido
 df["Tiempo_real"] = inicio + df["Tiempo"]
 
+# Crear DeltaT AHORA para evitar errores
+df["DeltaT"] = df["T_out"] - df["T_in"]
 
 # ========================== DISEÑO EN PESTAÑAS ==========================
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["📄 Datos", "📈 Gráficas", "⚡ Cálculo COP", "📥 Descargar",  "📘 ¿Cómo se calcula el COP?"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    "📄 Datos",
+    "📈 Gráficas",
+    "⚡ Cálculo COP",
+    "📥 Descargar",
+    "📘 ¿Cómo se calcula el COP?"
+])
 
 # =========================== TAB 1: DATOS ==============================
 with tab1:
     st.subheader("Vista previa del archivo")
     st.dataframe(df.head())
+    st.write("Dimensiones del archivo:", df.shape)
 
-    st.write("Dimensiones del archivo:")
-    st.write(df.shape)
-
-
-# ======================= GRÁFICAS =======================
+# =========================== TAB 2: GRAFICAS ===========================
 with tab2:
     st.subheader("📈 Gráfica de Temperaturas")
 
@@ -67,15 +71,15 @@ with tab2:
     ax1.plot(df["Tiempo_real"], df["T_in"], label="T_in", linewidth=2)
     ax1.plot(df["Tiempo_real"], df["T_out"], label="T_out", linewidth=2)
     ax1.plot(df["Tiempo_real"], df["T_tank"], label="T_tank", linewidth=2)
+
     ax1.set_xlabel("Tiempo")
     ax1.set_ylabel("Temperatura (°C)")
 
-    # ⭐ minor grid
     ax1.grid(which="major", alpha=0.3)
     ax1.grid(which="minor", alpha=0.15)
     ax1.minorticks_on()
-
     ax1.legend()
+
     st.pyplot(fig1)
 
     # ---------- ΔT ----------
@@ -106,8 +110,6 @@ with tab2:
 
     st.pyplot(fig3)
 
-
-
 # =========================== TAB 3: COP ================================
 with tab3:
     st.subheader("⚡ Cálculo del COP")
@@ -125,7 +127,6 @@ with tab3:
 
     rho = 1       # kg/L
     cp = 4180     # J/kgK
-
 
     # ------- MODO 1: Flujo Abierto -------
     if modo == "Caudalímetro (flujo abierto)":
@@ -151,7 +152,6 @@ with tab3:
         st.write(f"🔺 ΔT tanque: **{deltaT_tank:.2f} °C**")
         st.write(f"🔥 Transferencia térmica útil: **{Q_dot:.2f} W**")
         st.write(f"# ⭐ COP estimado (flujo abierto): **{COP:.2f}**")
-
 
     # ------- MODO 2: Tanque Cerrado -------
     else:
@@ -180,8 +180,7 @@ with tab3:
 with tab4:
     st.subheader("📥 Descargar CSV corregido")
 
-    df_export = df.copy()
-    df_csv = df_export.to_csv(index=False).encode("utf-8")
+    df_csv = df.to_csv(index=False).encode("utf-8")
 
     st.download_button(
         "Descargar archivo corregido",
@@ -189,7 +188,8 @@ with tab4:
         "datos_corregidos.csv",
         mime="text/csv"
     )
-# =========================== TAB 5: EXPLICACIÓN COP ===========================
+
+# =========================== TAB 5: EXPLICACIÓN COP ====================
 with tab5:
     st.subheader("📘 ¿Cómo se calcula el COP?")
 
@@ -197,63 +197,53 @@ with tab5:
 El **Coeficiente de Desempeño (COP)** mide qué tan eficiente es un sistema de calefacción.
 Se define como:
 
-\[
-COP = \frac{\dot{Q}}{P_{el}}
-\]
-
-donde:  
-- **\( \dot{Q} \)** = potencia térmica útil entregada al agua (W)  
-- **\( P_{el} \)** = potencia eléctrica consumida (W)
+\\[
+COP = \\frac{\\dot{Q}}{P_{el}}
+\\]
 
 ---
 
 ## 🔵 1. Modo Flujo Abierto (Caudalímetro)
 Cuando el agua fluye a través del tanque:
 
-\[
-Q = m \, c_p \, \Delta T
-\]
+\\[
+Q = m \\, c_p \\, (T_{out} - T_{in})
+\\]
 
 El volumen calentado se obtiene integrando el caudal:
 
-\[
-m = \rho \int \dot{V}(t)\, dt
-\]
+\\[
+m = \\rho \\int \\dot{V}(t) \\, dt
+\\]
 
 Luego:
 
-\[
-\dot{Q} = \frac{Q}{\Delta t}
-\]
+\\[
+\\dot{Q} = \\frac{Q}{\\Delta t}
+\\]
 
 ---
 
 ## 🔵 2. Modo Tanque Cerrado (Volumen fijo)
 Cuando cierras la llave, el volumen del tanque es fijo:
 
-\[
-Q = m \, c_p \, (T_{final} - T_{inicial})
-\]
+\\[
+Q = m \\, c_p \\, (T_{final} - T_{inicial})
+\\]
 
 con:
 
-\[
-m = \rho \, V_{\text{tanque}}
-\]
-
-El COP se calcula igual:
-
-\[
-COP = \frac{\dot{Q}}{P_{el}}
-\]
+\\[
+m = \\rho \\, V_{tanque}
+\\]
 
 ---
 
-## 🔧 Supuestos utilizados
-- ρ ≈ 1 kg/L (agua)  
+## 🔧 Supuestos usados
+- Agua: ρ ≈ 1 kg/L  
 - \( c_p = 4180 \, J/(kg·K) \)  
-- No se consideran pérdidas térmicas del tanque  
-- Tiempos tomados desde los datos corregidos  
+- No se consideran pérdidas térmicas  
+- El tiempo se toma desde la hora corregida  
 
 ---
 """)
