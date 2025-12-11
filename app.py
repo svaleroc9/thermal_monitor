@@ -48,7 +48,7 @@ df["Tiempo_real"] = inicio + df["Tiempo"]
 
 
 # ========================== DISEÑO EN PESTAÑAS ==========================
-tab1, tab2, tab3, tab4 = st.tabs(["📄 Datos", "📈 Gráficas", "⚡ Cálculo COP", "📥 Descargar",  "📘 ¿Cómo se calcula el COP?"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["📄 Datos", "📈 Gráficas", "⚡ Cálculo COP", "📥 Descargar",  "📘 ¿Cómo se calcula el COP?"])
 
 # =========================== TAB 1: DATOS ==============================
 with tab1:
