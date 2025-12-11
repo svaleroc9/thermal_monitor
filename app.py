@@ -189,42 +189,40 @@ with tab4:
         mime="text/csv"
     )
 
+# =========================== TAB 5: Cálculo COP ==========================
 with tab5:
     st.subheader("📘 ¿Cómo se calcula el COP?")
 
-    st.markdown(r"""
-El **Coeficiente de Desempeño (COP)** mide qué tan eficiente es un sistema de calefacción.  
-Compara la **energía térmica útil entregada al agua** con la **energía eléctrica consumida**.
+    st.markdown("""
+El **Coeficiente de Desempeño (COP)** mide qué tan eficiente es un sistema de calefacción, comparando la energía térmica entregada con la energía eléctrica consumida.
 
 ---
 
 # 🔷 Fórmula general del COP
 
-$$
-COP = \frac{\dot{Q}}{P_{el}}
-$$
+\\[
+COP = \\frac{\\dot{Q}}{P_{el}}
+\\]
 
-donde:
-
-- \( \dot{Q} \) = potencia térmica útil (W)  
-- \( P_{el} \) = potencia eléctrica consumida por el sistema (W)
+donde:  
+- \\( \\dot{Q} \\) = potencia térmica útil (W)  
+- \\( P_{el} \\) = potencia eléctrica consumida (W)
 
 ---
 
 # ⚡ ¿De dónde sale \(P_{el}\)?
 
-La potencia eléctrica del calentador se calcula como:
+La potencia eléctrica del sistema se calcula como:
 
-$$
-P_{el} = V \cdot I
-$$
+\\[
+P_{el} = V \\cdot I
+\\]
 
-donde:
-
-- **V** = voltaje aplicado al compresor  
+donde:  
+- **V** = voltaje aplicado  
 - **I** = corriente promedio medida  
 
-Estos valores los ingresa el usuario en la aplicación.
+Estos valores los ingresa el usuario.
 
 ---
 
