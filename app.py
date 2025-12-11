@@ -39,9 +39,11 @@ if file:
 
     # Convertir los tiempos de "mm:ss" a tiempo real
     df["Tiempo"] = pd.to_timedelta(df["Tiempo"])
+    
+    # Sumar la hora real sin timezone
+    inicio = pd.to_datetime(str(start_time), format="%H:%M:%S")
+    df["Tiempo_real"] = inicio + df["Tiempo"]
 
-    # Sumar la hora real
-    df["Tiempo_real"] = pd.to_datetime(start_time.strftime("%H:%M:%S")) + df["Tiempo"]
 
     # ======================= GRAFICAS =======================
     st.write("## 📈 Gráfica de Temperaturas")
