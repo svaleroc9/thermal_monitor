@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # ======================== CONFIGURACIÓN GENERAL ========================
 st.set_page_config(
     page_title="Analizador COP – Calentador de Agua",
-    page_icon="🔥",
+    page_icon="🚰",
     layout="wide"
 )
 
@@ -48,7 +48,7 @@ df["Tiempo_real"] = inicio + df["Tiempo"]
 
 
 # ========================== DISEÑO EN PESTAÑAS ==========================
-tab1, tab2, tab3, tab4 = st.tabs(["📄 Datos", "📈 Gráficas", "⚡ Cálculo COP", "📥 Descargar"])
+tab1, tab2, tab3, tab4 = st.tabs(["📄 Datos", "📈 Gráficas", "⚡ Cálculo COP", "📥 Descargar",  "📘 ¿Cómo se calcula el COP?"])
 
 # =========================== TAB 1: DATOS ==============================
 with tab1:
@@ -59,7 +59,7 @@ with tab1:
     st.write(df.shape)
 
 
-# =========================== TAB 2: GRAFICAS ===========================
+# ======================= GRÁFICAS =======================
 with tab2:
     st.subheader("📈 Gráfica de Temperaturas")
 
@@ -69,27 +69,43 @@ with tab2:
     ax1.plot(df["Tiempo_real"], df["T_tank"], label="T_tank", linewidth=2)
     ax1.set_xlabel("Tiempo")
     ax1.set_ylabel("Temperatura (°C)")
-    ax1.grid(alpha=0.3)
+
+    # ⭐ minor grid
+    ax1.grid(which="major", alpha=0.3)
+    ax1.grid(which="minor", alpha=0.15)
+    ax1.minorticks_on()
+
     ax1.legend()
     st.pyplot(fig1)
 
-    st.subheader("📉 ΔT = T_out – T_in")
-    df["DeltaT"] = df["T_out"] - df["T_in"]
+    # ---------- ΔT ----------
+    st.subheader("📉 ΔT = $T_{out} - T_{in}$")
 
     fig2, ax2 = plt.subplots(figsize=(12, 4))
     ax2.plot(df["Tiempo_real"], df["DeltaT"], color="purple", linewidth=2)
     ax2.set_xlabel("Tiempo")
-    ax2.set_ylabel("ΔT (°C)")
-    ax2.grid(alpha=0.3)
+    ax2.set_ylabel("ΔT ($T_{out} - T_{in}$) [°C]")
+
+    ax2.grid(which="major", alpha=0.3)
+    ax2.grid(which="minor", alpha=0.15)
+    ax2.minorticks_on()
+
     st.pyplot(fig2)
 
+    # ---------- Caudal ----------
     st.subheader("💧 Caudal (L/min)")
+
     fig3, ax3 = plt.subplots(figsize=(12, 4))
     ax3.plot(df["Tiempo_real"], df["Caudal(L/min)"], color="orange", linewidth=2)
     ax3.set_xlabel("Tiempo")
     ax3.set_ylabel("Caudal (L/min)")
-    ax3.grid(alpha=0.3)
+
+    ax3.grid(which="major", alpha=0.3)
+    ax3.grid(which="minor", alpha=0.15)
+    ax3.minorticks_on()
+
     st.pyplot(fig3)
+
 
 
 # =========================== TAB 3: COP ================================
@@ -173,3 +189,71 @@ with tab4:
         "datos_corregidos.csv",
         mime="text/csv"
     )
+# =========================== TAB 5: EXPLICACIÓN COP ===========================
+with tab5:
+    st.subheader("📘 ¿Cómo se calcula el COP?")
+
+    st.markdown("""
+El **Coeficiente de Desempeño (COP)** mide qué tan eficiente es un sistema de calefacción.
+Se define como:
+
+\[
+COP = \frac{\dot{Q}}{P_{el}}
+\]
+
+donde:  
+- **\( \dot{Q} \)** = potencia térmica útil entregada al agua (W)  
+- **\( P_{el} \)** = potencia eléctrica consumida (W)
+
+---
+
+## 🔵 1. Modo Flujo Abierto (Caudalímetro)
+Cuando el agua fluye a través del tanque:
+
+\[
+Q = m \, c_p \, \Delta T
+\]
+
+El volumen calentado se obtiene integrando el caudal:
+
+\[
+m = \rho \int \dot{V}(t)\, dt
+\]
+
+Luego:
+
+\[
+\dot{Q} = \frac{Q}{\Delta t}
+\]
+
+---
+
+## 🔵 2. Modo Tanque Cerrado (Volumen fijo)
+Cuando cierras la llave, el volumen del tanque es fijo:
+
+\[
+Q = m \, c_p \, (T_{final} - T_{inicial})
+\]
+
+con:
+
+\[
+m = \rho \, V_{\text{tanque}}
+\]
+
+El COP se calcula igual:
+
+\[
+COP = \frac{\dot{Q}}{P_{el}}
+\]
+
+---
+
+## 🔧 Supuestos utilizados
+- ρ ≈ 1 kg/L (agua)  
+- \( c_p = 4180 \, J/(kg·K) \)  
+- No se consideran pérdidas térmicas del tanque  
+- Tiempos tomados desde los datos corregidos  
+
+---
+""")
