@@ -173,24 +173,7 @@ with tab3:
         Q_dot = Q / tiempo_total_s
         COP = Q_dot / P_el
 
-        st.write(f"🔥 Transferencia térmica útil: **{Q_dot:.2f} W**")
-        st.write(f"# ⭐ COP estimado (tanque cerrado): **{COP:.2f}**")
-
-# =========================== TAB 4: DESCARGAS ==========================
-with tab4:
-    st.subheader("📥 Descargar CSV corregido")
-
-    df_csv = df.to_csv(index=False).encode("utf-8")
-
-    st.download_button(
-        "Descargar archivo corregido",
-        df_csv,
-        "datos_corregidos.csv",
-        mime="text/csv"
-    )
-
-# =========================== TAB 5: Cálculo COP ==========================
-with tab5:
+        st.write(f"🔥 Transferencia térmica útil: **{Q_dot:.2f} W**")with tab5:
     st.subheader("📘 ¿Cómo se calcula el COP?")
 
     st.markdown(r"""
@@ -202,11 +185,11 @@ $$
 COP = \frac{\dot{Q}}{P_{el}}
 $$
 
-donde \(P_{el}\) es la potencia eléctrica consumida por el equipo.
+donde $P_{el}$ es la potencia eléctrica consumida por el equipo.
 
 ---
 
-# ⚡ ¿De dónde sale \(P_{el}\)?
+# ⚡ ¿De dónde sale $P_{el}$?
 
 La potencia eléctrica se calcula como:
 
@@ -285,3 +268,20 @@ $$
 
 ---
 """)
+
+        st.write(f"# ⭐ COP estimado (tanque cerrado): **{COP:.2f}**")
+
+# =========================== TAB 4: DESCARGAS ==========================
+with tab4:
+    st.subheader("📥 Descargar CSV corregido")
+
+    df_csv = df.to_csv(index=False).encode("utf-8")
+
+    st.download_button(
+        "Descargar archivo corregido",
+        df_csv,
+        "datos_corregidos.csv",
+        mime="text/csv"
+    )
+
+# =========================== TAB 5: Cálculo COP ==========================
