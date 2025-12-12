@@ -74,12 +74,10 @@ with tab2:
 
     ax1.set_xlabel("Tiempo")
     ax1.set_ylabel("Temperatura (°C)")
-
     ax1.grid(which="major", alpha=0.3)
     ax1.grid(which="minor", alpha=0.15)
     ax1.minorticks_on()
     ax1.legend()
-
     st.pyplot(fig1)
 
     # ---------- ΔT ----------
@@ -89,11 +87,9 @@ with tab2:
     ax2.plot(df["Tiempo_real"], df["DeltaT"], color="purple", linewidth=2)
     ax2.set_xlabel("Tiempo")
     ax2.set_ylabel("ΔT ($T_{out} - T_{in}$) [°C]")
-
     ax2.grid(which="major", alpha=0.3)
     ax2.grid(which="minor", alpha=0.15)
     ax2.minorticks_on()
-
     st.pyplot(fig2)
 
     # ---------- Caudal ----------
@@ -103,11 +99,9 @@ with tab2:
     ax3.plot(df["Tiempo_real"], df["Caudal(L/min)"], color="orange", linewidth=2)
     ax3.set_xlabel("Tiempo")
     ax3.set_ylabel("Caudal (L/min)")
-
     ax3.grid(which="major", alpha=0.3)
     ax3.grid(which="minor", alpha=0.15)
     ax3.minorticks_on()
-
     st.pyplot(fig3)
 
 # =========================== TAB 3: COP ================================
@@ -174,6 +168,8 @@ with tab3:
         COP = Q_dot / P_el
 
         st.write(f"🔥 Transferencia térmica útil: **{Q_dot:.2f} W**")
+        st.write(f"# ⭐ COP estimado (tanque cerrado): **{COP:.2f}**")
+
 
 # =========================== TAB 4: DESCARGAS ==========================
 with tab4:
@@ -188,7 +184,7 @@ with tab4:
         mime="text/csv"
     )
 
-# =========================== TAB 5: Cálculo COP ==========================
+# =========================== TAB 5: EXPLICACIÓN COP ====================
 with tab5:
     st.subheader("📘 ¿Cómo se calcula el COP?")
 
@@ -217,25 +213,17 @@ donde:
 - **V** = voltaje suministrado (en volts)  
 - **I** = corriente promedio (en amperios)  
 
-Estos valores los ingresa el usuario desde la interfaz.
-
 ---
 
 # 🔵 1. Modo Flujo Abierto (Caudalímetro)
-
-Cuando el agua fluye a través del tanque:
 
 $$
 Q = m\, c_p\, (T_{out} - T_{in})
 $$
 
-El volumen calentado se obtiene integrando el caudal:
-
 $$
 m = \rho \int \dot{V}(t)\, dt
 $$
-
-La potencia térmica útil es:
 
 $$
 \dot{Q} = \frac{Q}{\Delta t}
@@ -245,22 +233,12 @@ $$
 
 # 🔵 2. Modo Tanque Cerrado (Volumen fijo)
 
-Cuando cierras la llave, el volumen del tanque es fijo:
-
 $$
 Q = m\, c_p\, (T_{final} - T_{inicial})
 $$
 
-donde:
-
 $$
 m = \rho\, V_{tanque}
-$$
-
-El COP se calcula con:
-
-$$
-COP = \frac{\dot{Q}}{P_{el}}
 $$
 
 ---
@@ -279,10 +257,5 @@ $$
 c_p = 4180\ \mathrm{J/(kg\cdot K)}
 $$
 
-- No se consideran pérdidas térmicas del tanque.  
-- El tiempo se toma desde la hora corregida ingresada por el usuario.  
-
 ---
 """)
-
-        st.write(f"# ⭐ COP estimado (tanque cerrado): **{COP:.2f}**")
