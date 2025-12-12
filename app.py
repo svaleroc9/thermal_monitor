@@ -198,21 +198,21 @@ El **Coeficiente de Desempeño (COP)** mide qué tan eficiente es un sistema de 
 
 ## 🔷 Definición general
 
-$$
+\[
 COP = \frac{\dot{Q}}{P_{el}}
-$$
+\]
 
-donde \(P_{el}\) es la potencia eléctrica consumida por el equipo.
+donde \( P_{el} \) es la potencia eléctrica consumida por el equipo.
 
 ---
 
-# ⚡ ¿De dónde sale \(P_{el}\)?
+# ⚡ ¿De dónde sale \( P_{el} \)?
 
 La potencia eléctrica se calcula como:
 
-$$
+\[
 P_{el} = V \cdot I
-$$
+\]
 
 donde:  
 - **V** = voltaje suministrado (en volts)  
@@ -226,62 +226,11 @@ Estos valores los ingresa el usuario desde la interfaz.
 
 Cuando el agua fluye a través del tanque:
 
-$$
+\[
 Q = m\, c_p\, (T_{out} - T_{in})
-$$
+\]
 
 El volumen calentado se obtiene integrando el caudal:
 
-$$
-m = \rho \int \dot{V}(t)\, dt
-$$
-
-La potencia térmica útil es:
-
-$$
-\dot{Q} = \frac{Q}{\Delta t}
-$$
-
----
-
-# 🔵 2. Modo Tanque Cerrado (Volumen fijo)
-
-Cuando cierras la llave, el volumen del tanque es fijo:
-
-$$
-Q = m\, c_p\, (T_{final} - T_{inicial})
-$$
-
-donde:
-
-$$
-m = \rho\, V_{tanque}
-$$
-
-El COP se calcula con:
-
-$$
-COP = \frac{\dot{Q}}{P_{el}}
-$$
-
----
-
-# 🔧 Supuestos utilizados
-
-- Agua con densidad aproximada:
-
-$$
-\rho \approx 1\ \text{kg/L}
-$$
-
-- Calor específico del agua:
-
-$$
-c_p = 4180\ \mathrm{J/(kg\cdot K)}
-$$
-
-- No se consideran pérdidas térmicas del tanque.  
-- El tiempo se toma desde la hora corregida ingresada por el usuario.  
-
----
-""")
+\[
+m =
